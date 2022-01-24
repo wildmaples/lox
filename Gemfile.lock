@@ -17,7 +17,7 @@ GEM
     rspec-support (3.10.3)
 
 PLATFORMS
-  arm64-darwin-21
+  ruby
 
 DEPENDENCIES
   rspec
