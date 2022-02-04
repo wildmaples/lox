@@ -1,1 +1,13 @@
 #!/usr/bin/env ruby
+
+require_relative '../lib/lox'
+
+lox = Lox.new
+
+if ARGV.length > 1
+  puts "Usage: lox [script/file]"
+elsif ARGV.length == 1
+  lox.run(ARGV[0])
+else
+  lox.prompt
+end
