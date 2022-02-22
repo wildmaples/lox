@@ -1,4 +1,6 @@
 require_relative 'scanner'
+require_relative 'parser'
+require_relative 'expression'
 
 class Lox
   def prompt
@@ -11,8 +13,9 @@ class Lox
   end
 
   def run(io)
-    scanner = Scanner.new(io)
-    puts scanner.scan
+    tokens = Scanner.new(io).scan
+    expression = Parser.new(tokens).parse
+    puts expression.pp
   end
 
   def self.error(line, msg)
