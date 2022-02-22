@@ -92,7 +92,7 @@ class Scanner
   end
 
   def number
-    match = @source.match(%r{[0-9]+.[0-9]+}, @start)
+    match = @source.match(%r{(\d+\.\d+|\d+)}, @start)
     if match
       number = @source[@start...match.end(0)]
       add_token(:NUMBER, number, number.to_f)
