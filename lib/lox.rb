@@ -1,6 +1,7 @@
 require_relative 'scanner'
 require_relative 'parser'
-require_relative 'expression'
+require_relative 'ast/expression'
+require_relative 'interpreter'
 
 class Lox
   def prompt
@@ -9,13 +10,14 @@ class Lox
 
   def run_file(input)
     run(File.open(file))
-    return if @had_error
+    return SystemExit.new(65) if @had_error
+    return SystemExit.new(80) if @had_runtime_error
   end
 
   def run(io)
     tokens = Scanner.new(io).scan
     expression = Parser.new(tokens).parse
-    puts expression.pp
+    interpreter = Interpreter.new.interpret(expression)
   end
 
   def self.error(line, msg)
@@ -25,5 +27,10 @@ class Lox
   def self.report(line, where, msg)
     puts "[line #{line}] Error #{where}: #{msg}"
     @had_error = true
+  end
+
+  def self.runtime_error(error)
+    puts "#{error.get_message} [line #{error.token.line}]"
+    @had_runtime_error = true
   end
 end

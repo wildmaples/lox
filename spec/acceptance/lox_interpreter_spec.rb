@@ -4,7 +4,7 @@ RSpec.describe 'the Lox interpreter' do
   CHAPTERS = {
     chap04_scanning:    :done,
     chap06_parsing:     :done,
-    chap07_evaluating:  :todo,
+    chap07_evaluating:  :done,
     chap08_statements:  :todo,
     chap09_control:     :todo,
     chap10_functions:   :todo,

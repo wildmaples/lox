@@ -11,4 +11,9 @@ class Token
   def to_s
     "#{@type} #{@lexeme} #{@literal || "null"}"
   end
+
+  def line
+    # line number starts from 1
+    @line + 1
+  end
 end

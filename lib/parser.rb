@@ -1,4 +1,4 @@
-require_relative 'expression'
+require_relative 'ast/expression'
 
 class Parser
   def initialize(tokens)
