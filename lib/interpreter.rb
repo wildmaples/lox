@@ -2,10 +2,11 @@ require_relative "runtime_error"
 require_relative 'lox'
 
 class Interpreter
-  def interpret(expression)
+  def interpret(statements)
     begin
-      value = evaluate(expression)
-      puts stringify(value)
+      statements.each do |statement|
+        execute(statement)
+      end
     rescue RuntimeError => e
       Lox.runtime_error(e)
     end
@@ -21,6 +22,19 @@ class Interpreter
 
   def evaluate(expr)
     expr.accept(self)
+  end
+
+  def execute(stmt)
+    stmt.accept(self)
+  end
+
+  def visit_expression_stmt(stmt)
+    evaluate(stmt.expression)
+  end
+
+  def visit_print_stmt(stmt)
+    value = evaluate(stmt.expression)
+    puts stringify(value)
   end
 
   def visit_literal_expr(expr)

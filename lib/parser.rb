@@ -1,4 +1,5 @@
 require_relative 'ast/expression'
+require_relative 'ast/statement'
 
 class Parser
   def initialize(tokens)
@@ -9,11 +10,33 @@ class Parser
   attr_accessor :tokens, :current
 
   def parse
-    expression
+    statements = []
+    while !is_at_end?
+      statements << statement
+    end
+
+    statements
   end
 
   def expression
     equality
+  end
+
+  def statement
+    return print_statement if match(:PRINT)
+    expression_statement
+  end
+
+  def print_statement
+    value = expression
+    consume(:SEMICOLON, "Expect ';' after value.")
+    AST::Statement::Print.new(value)
+  end
+
+  def expression_statement
+    expr = expression
+    consume(:SEMICOLON, "Expect ';' after value.")
+    AST::Statement::Expression.new(expr)
   end
 
   def equality
@@ -99,6 +122,11 @@ class Parser
     end
   end
 
+  def consume(type, message)
+    return advance if check(type)
+    throw error(peek, message)
+  end
+
   def check(type)
     return false if is_at_end?
     peek.type == type
@@ -122,4 +150,11 @@ class Parser
   def previous
     tokens[current - 1]
   end
+
+  def error(token, message)
+    Lox.error(token, message)
+    ParseError
+  end
+
+  class ParseError; end
 end

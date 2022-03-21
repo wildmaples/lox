@@ -16,8 +16,8 @@ class Lox
 
   def run(io)
     tokens = Scanner.new(io).scan
-    expression = Parser.new(tokens).parse
-    interpreter = Interpreter.new.interpret(expression)
+    statements = Parser.new(tokens).parse
+    interpreter = Interpreter.new.interpret(statements)
   end
 
   def self.error(line, msg)
