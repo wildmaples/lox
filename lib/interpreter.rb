@@ -1,7 +1,14 @@
 require_relative "runtime_error"
 require_relative 'lox'
+require_relative 'environment'
 
 class Interpreter
+  def initialize
+    @environment = Environment.new
+  end
+
+  attr_accessor :environment
+
   def interpret(statements)
     begin
       statements.each do |statement|
@@ -37,6 +44,16 @@ class Interpreter
     puts stringify(value)
   end
 
+  def visit_var_stmt(stmt)
+    value = nil
+    if stmt.initializer != nil
+      value = evaluate(stmt.initializer)
+    end
+
+    environment.define(stmt.name.lexeme, value)
+    nil
+  end
+
   def visit_literal_expr(expr)
     expr.value
   end
@@ -46,11 +63,15 @@ class Interpreter
 
     case expr.operator.type
     when :BANG
-      !right # we don't need is_truthy
+      !right
     when :MINUS
       check_number_operand(expr.operator, right)
       -right
     end
+  end
+
+  def visit_variable_stmt(expr)
+    environment.get(expr.name)
   end
 
   def visit_grouping_expr(expr)

@@ -12,7 +12,7 @@ class Parser
   def parse
     statements = []
     while !is_at_end?
-      statements << statement
+      statements << declaration
     end
 
     statements
@@ -20,6 +20,16 @@ class Parser
 
   def expression
     equality
+  end
+
+  def declaration
+    begin
+      return var_declaration if match(:VAR)
+      return statement
+    rescue ParseError => e
+      synchronize
+      nil
+    end
   end
 
   def statement
@@ -31,6 +41,17 @@ class Parser
     value = expression
     consume(:SEMICOLON, "Expect ';' after value.")
     AST::Statement::Print.new(value)
+  end
+
+  def var_declaration
+    name = consume(:IDENTIFIER, "Expect variable name.")
+    initializer = nil
+    if match(:EQUAL)
+      initializer = expression
+    end
+
+    consume(:SEMICOLON, "Expect ';' after variable declaration.")
+    AST::Statement::Var.new(name, initializer)
   end
 
   def expression_statement
@@ -106,6 +127,10 @@ class Parser
       return AST::Expression::Literal.new(previous.literal)
     end
 
+    if match(:IDENTIFIER)
+      return AST::Statement::Variable.new(previous)
+    end
+
     if match(:LEFT_PAREN)
       expr = expression
       advance if check(:RIGHT_PAREN)
@@ -134,7 +159,9 @@ class Parser
 
   def advance
     if !is_at_end?
-      return @current += 1
+      token = tokens[@current]
+      @current += 1
+      return token
     end
     previous
   end
@@ -154,6 +181,20 @@ class Parser
   def error(token, message)
     Lox.error(token, message)
     ParseError
+  end
+
+  def synchronize
+    advance
+    while !is_at_end?
+      return if previous.type == :SEMICOLON
+
+      case peek.type
+      when :CLASS, :FUN, :VAR, :FOR, :IF, :WHILE, :PRINT, :RETURN
+        return
+      end
+
+      advance
+    end
   end
 
   class ParseError; end
