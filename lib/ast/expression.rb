@@ -1,5 +1,11 @@
 class AST
   class Expression
+    Assign = Struct.new(:name, :value) do
+      def accept(visitor)
+        visitor.visit_assign_expr(self)
+      end
+    end
+
     Binary = Struct.new(:left, :operator, :right) do
       def pp
         "(#{operator.lexeme} #{left.pp} #{right.pp})"

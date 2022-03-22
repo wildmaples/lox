@@ -19,7 +19,7 @@ class Parser
   end
 
   def expression
-    equality
+    assignment
   end
 
   def declaration
@@ -58,6 +58,24 @@ class Parser
     expr = expression
     consume(:SEMICOLON, "Expect ';' after value.")
     AST::Statement::Expression.new(expr)
+  end
+
+  def assignment
+    expr = equality
+
+    if match(:EQUAL)
+      equals = previous
+      value = assignment
+
+      if expr.is_a?(AST::Statement::Variable)
+        name = expr.name
+        return AST::Expression::Assign.new(name, value)
+      end
+
+      error(equals, "Invalid assignment target.")
+    end
+
+    expr
   end
 
   def equality
@@ -180,7 +198,7 @@ class Parser
 
   def error(token, message)
     Lox.error(token, message)
-    ParseError
+    ParseError.new
   end
 
   def synchronize
