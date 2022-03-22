@@ -5,7 +5,7 @@ RSpec.describe 'the Lox interpreter' do
     chap04_scanning:    :done,
     chap06_parsing:     :done,
     chap07_evaluating:  :done,
-    chap08_statements:  :wip,
+    chap08_statements:  :done,
     chap09_control:     :todo,
     chap10_functions:   :todo,
     chap11_resolving:   :todo,

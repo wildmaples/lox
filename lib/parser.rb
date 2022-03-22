@@ -34,6 +34,7 @@ class Parser
 
   def statement
     return print_statement if match(:PRINT)
+    return AST::Statement::Block.new(block) if match(:LEFT_BRACE)
     expression_statement
   end
 
@@ -58,6 +59,16 @@ class Parser
     expr = expression
     consume(:SEMICOLON, "Expect ';' after value.")
     AST::Statement::Expression.new(expr)
+  end
+
+  def block
+    statements = []
+    while !check(:RIGHT_BRACE) && !is_at_end?
+      statements << declaration
+    end
+
+    consume(:RIGHT_BRACE, "Expect '}' after block.")
+    statements
   end
 
   def assignment
@@ -167,7 +178,7 @@ class Parser
 
   def consume(type, message)
     return advance if check(type)
-    throw error(peek, message)
+    raise error(peek, message)
   end
 
   def check(type)
@@ -215,5 +226,5 @@ class Parser
     end
   end
 
-  class ParseError; end
+  class ParseError < Exception; end
 end

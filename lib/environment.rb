@@ -21,8 +21,14 @@ class Environment
   def assign(name, value)
     if values.key?(name.lexeme)
       values[name.lexeme] = value
-    else
-      raise RuntimeError.new(name, "Undefined variable '#{name.lexeme}'.")
+      return
     end
+
+    if !enclosing.nil?
+      enclosing.assign(name, value)
+      return
+    end
+
+    raise RuntimeError.new(name, "Undefined variable '#{name.lexeme}'.")
   end
 end

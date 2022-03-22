@@ -1,5 +1,11 @@
 class AST
   class Statement
+    Block = Struct.new(:statements) do
+      def accept(visitor)
+        visitor.visit_block_stmt(self)
+      end
+    end
+
     Expression = Struct.new(:expression) do
       def accept(visitor)
         visitor.visit_expression_stmt(self)
